@@ -29,8 +29,16 @@ if "prev_common" not in st.session_state:
     st.session_state.prev_common = None
     st.session_state.prev_diff = None
 
+if "message" not in st.session_state:
+    st.session_state.message = None
+
 
 st.title("מצא את המספר השונה")
+
+# --- הצגת הודעה (אם קיימת) ---
+if st.session_state.message:
+    st.success(st.session_state.message)
+    st.session_state.message = None  # כדי שלא תישאר לנצח
 
 # --- שורה ראשונה ---
 if st.session_state.prev_common is not None:
@@ -55,9 +63,10 @@ for i in range(GRID_SIZE):
                 st.session_state.prev_common = st.session_state.common
                 st.session_state.prev_diff = st.session_state.different
 
-                new_round()
+                # שמירת הודעה
+                st.session_state.message = "נכון! סיבוב חדש 🎉"
 
-                # 🔥 זה הפתרון החשוב
+                new_round()
                 st.rerun()
 
             else:
