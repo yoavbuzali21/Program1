@@ -3,6 +3,7 @@ import random
 
 GRID_SIZE = 10
 
+# יצירת סיבוב חדש
 def new_round():
     common = random.randint(10, 99)
 
@@ -21,14 +22,19 @@ def new_round():
     st.session_state.different = different
 
 
-# אתחול
+# --- אתחול session_state ---
 if "grid" not in st.session_state:
     new_round()
 
+if "prev_common" not in st.session_state:
+    st.session_state.prev_common = None
+    st.session_state.prev_diff = None
+
+
 st.title("מצא את המספר השונה")
 
-# --- שורה ראשונה ---
-if "prev_common" in st.session_state:
+# --- שורה ראשונה: הצגת סיבוב קודם ---
+if st.session_state.prev_common is not None:
     st.markdown(
         f"חריג קודם: {st.session_state.prev_diff} | רגיל קודם: {st.session_state.prev_common}"
     )
@@ -37,23 +43,26 @@ else:
 
 st.divider()
 
-# --- הגריד ---
+# --- הגריד 10x10 ---
 for i in range(GRID_SIZE):
     cols = st.columns(GRID_SIZE)
     for j in range(GRID_SIZE):
         index = i * GRID_SIZE + j
         if cols[j].button(str(st.session_state.grid[index]), key=index):
+
+            # אם המשתמש צדק
             if index == st.session_state.diff_index:
                 
-                #  שומרים רק כשנכון
+                # שמירת הסיבוב הקודם (רק כאן!)
                 st.session_state.prev_common = st.session_state.common
                 st.session_state.prev_diff = st.session_state.different
 
                 st.success("נכון! סיבוב חדש 🎉")
                 new_round()
+
             else:
                 st.error("לא נכון, נסה שוב")
 
-# ריסט
+# --- כפתור ריסט ---
 if st.button("התחל מחדש"):
     new_round()
